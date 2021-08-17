@@ -1,0 +1,45 @@
+<div class="container">
+  <h3 class="display-4">Recent albums</h3>
+  <table
+    class="
+      table table-striped table-inverse table-responsive table-dark table-hover
+    "
+  >
+    <thead class="thead-inverse">
+      <tr class="h5">
+        <th style="width: 16.66%">Cover</th>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Year</th>
+        <th>Rating</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let album of getAlbums()" class="" style="cursor: pointer" [routerLink]="['/album', album.id]">
+        <td scope="row">
+          <img src="{{ album.cover }}" alt="" width="50%" class="img-fluid" />
+        </td>
+        <td class="h6">{{ album.name }}</td>
+        <td>{{ album.artist }}</td>
+        <td>{{ album.year }}</td>
+        <td>
+          <span class="badge" [ngClass]="getAlbumRating(album)"
+            >{{ album.rating }}/10</span
+          >
+        </td>
+        <td>
+          <mat-icon aria-hidden="false" class="mr-3" style="cursor: pointer"
+            >edit</mat-icon
+          >
+          <mat-icon
+            aria-hidden="false"
+            style="cursor: pointer"
+            (click)="onDelete(album.id)"
+            >delete_forever</mat-icon
+          >
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

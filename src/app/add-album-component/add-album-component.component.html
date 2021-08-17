@@ -1,0 +1,63 @@
+<div class="container">
+  <form [formGroup]="albumForm" (ngSubmit)="newAlbum()">
+    <div class="form-group">
+      <label for="albumTitle">Album title</label>
+      <input
+        type="text"
+        class="form-control form-control-lg"
+        id="albumTitle"
+        formControlName="name"
+        aria-describedby="emailHelp"
+        placeholder="Enter album title"
+      />
+    </div>
+    <div class="form-group">
+      <label for="albumArtist">Album artist</label>
+      <input
+        type="text"
+        class="form-control"
+        id="albumArtist"
+        formControlName="artist"
+        aria-describedby="emailHelp"
+        placeholder="Enter album artist"
+      />
+      <small id="artistHelp" class="form-text text-muted"
+        >Or artists, if that's the case</small
+      >
+    </div>
+    <div class="form-group">
+      <label for="albumYear">Release year</label>
+      <input
+        type="text"
+        class="form-control"
+        id="albumYear"
+        formControlName="year"
+        aria-describedby="yearHelp"
+        placeholder="Enter the release year"
+      />
+    </div>
+    <div class="form-group">
+      <label for="albumCover">Album cover</label>
+      <input
+        type="text"
+        class="form-control"
+        id="albumCover"
+        formControlName="cover"
+        aria-describedby="coverHelp"
+        placeholder="Enter a link to the album's cover"
+      />
+    </div>
+    <div class="form-group">
+        <label for="albumRating">Album rating</label>
+        <input
+          type="text"
+          class="form-control"
+          id="albumRating"
+          formControlName="rating"
+          aria-describedby="ratingHelp"
+          placeholder="Enter a rating for the album"
+        />/10
+      </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>

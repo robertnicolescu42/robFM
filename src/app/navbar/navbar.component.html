@@ -1,0 +1,16 @@
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <a class="navbar-brand" routerLink="/main">Robi FM</a>
+  <div class="collapse navbar-collapse" id="collapsibleNavId">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/add">Add an album</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="onGetData()">Get data</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/add" (click)="onSaveData()">Save data</a>
+      </li>
+    </ul>
+  </div>
+</nav>
