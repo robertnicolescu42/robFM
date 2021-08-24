@@ -1,3 +1,8 @@
+.artist {
+  color: inherit;
+  text-decoration: none;
+}
+
 .artist h3 {
   opacity: 0.7;
 }

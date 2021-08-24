@@ -1,14 +1,19 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Album } from '../album.model';
 import { map } from 'rxjs/operators';
+import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 
+@Injectable()
 @Component({
   selector: 'app-main-content',
   templateUrl: './main-content.component.html',
   styleUrls: ['./main-content.component.css'],
 })
-export class MainContentComponent implements OnInit {
+export class MainContentComponent implements OnInit, OnDestroy {
+  closeModal: string | undefined;
+
   albums: Album[] = [
     //   {
     //     name: 'The Social Network',
@@ -37,7 +42,12 @@ export class MainContentComponent implements OnInit {
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private modalService: NgbModal,
+    // private route: ActivatedRoute,
+    private router: Router
+  ) {}
   getAlbums() {
     return this.albums.slice();
   }
@@ -85,13 +95,50 @@ export class MainContentComponent implements OnInit {
       });
   }
 
-  onDelete(albumId: string) {
+  onDelete(albumId: string, albumName: string) {
+    // this.triggerModal('Deleted ' + albumName);
     return this.http
-      .delete('https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' + albumId + '.json/')
-      .subscribe((responseData) => console.log(responseData));
+      .delete(
+        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' +
+          albumId +
+          '.json/'
+      )
+      .subscribe((responseData) => {
+        console.log(responseData);
+        // this.router.navigate(['main']);
+        this.ngOnInit();
+      });
+  }
+
+  triggerModal(content: any) {
+    this.modalService
+      .open(content, { ariaLabelledBy: 'modal-basic-title' })
+      .result.then(
+        (res: any) => {
+          this.closeModal = `Closed with: ${res}`;
+          // this.router.navigate(['main']);
+          this.ngOnInit();
+        },
+        (res: any) => {
+          this.closeModal = `Dismissed ${this.getDismissReason(res)}`;
+          this.router.navigate(['main']);
+        }
+      );
+  }
+
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
   }
 
   ngOnInit(): void {
     this.fetchAlbums();
   }
+
+  ngOnDestroy(): void {}
 }

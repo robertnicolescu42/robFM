@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
+import { AddAlbumComponentComponent } from '../add-album-component/add-album-component.component';
 import { MainContentComponent } from '../main-content/main-content.component';
 
 @Component({
@@ -7,7 +8,8 @@ import { MainContentComponent } from '../main-content/main-content.component';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit {
-  constructor(private mainContent: MainContentComponent) {}
+  displayButton: boolean = true;
+  constructor(private mainContent: MainContentComponent, private add: AddAlbumComponentComponent) {}
 
   ngOnInit(): void {}
 
@@ -18,4 +20,8 @@ export class NavbarComponent implements OnInit {
   onSaveData() {
     this.mainContent.storeAlbums();
   }
+
+  // getEditMode() {
+  //   return this.add.editMode;
+  // }
 }

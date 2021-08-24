@@ -11,6 +11,7 @@ import { AddAlbumComponentComponent } from './add-album-component/add-album-comp
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlbumDetailComponent } from './album-detail/album-detail.component';
+import { Environment } from './environment';
 
 
 @NgModule({
@@ -30,7 +31,7 @@ import { AlbumDetailComponent } from './album-detail/album-detail.component';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [MainContentComponent],
+  providers: [MainContentComponent, AddAlbumComponentComponent, Environment],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

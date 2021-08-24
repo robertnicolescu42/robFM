@@ -6,6 +6,7 @@ import { MainContentComponent } from './main-content/main-content.component';
 
 const routes: Routes = [
   { path: 'add', component: AddAlbumComponentComponent },
+  { path: 'edit/:id', component: AddAlbumComponentComponent },
   { path: 'main', component: MainContentComponent },
   { path: 'album/:id', component: AlbumDetailComponent },
 ];

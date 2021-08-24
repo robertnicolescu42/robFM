@@ -16,7 +16,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let album of getAlbums()" class="" style="cursor: pointer" [routerLink]="['/album', album.id]">
+      <tr *ngFor="let album of getAlbums()" class="">
         <td scope="row">
           <img src="{{ album.cover }}" alt="" width="50%" class="img-fluid" />
         </td>
@@ -29,15 +29,38 @@
           >
         </td>
         <td>
-          <mat-icon aria-hidden="false" class="mr-3" style="cursor: pointer"
+          <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" [routerLink]="['/album', album.id]"
+            >info</mat-icon
+          >
+          <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" [routerLink]="['/edit', album.id]"
             >edit</mat-icon
           >
           <mat-icon
             aria-hidden="false"
             style="cursor: pointer"
-            (click)="onDelete(album.id)"
+            (click)="triggerModal(modalData)"
+            class="mr-1"
             >delete_forever</mat-icon
           >
+          <!-- (click)="onDelete(album.id)" -->
+          <ng-template #modalData let-modal>
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">Are you sure?</h4>
+              <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p><strong>Are you sure you want to delete <span class="text-primary">{{ album.name }}</span> by <span class="text-primary">{{ album.artist }}</span>? </strong></p>
+              
+              <p>All data related to the album will be removed permanently.
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" (click)="onDelete(album.id, album.name); modal.close('Save click'); ">Delete</button>
+              <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Close</button>
+            </div>
+          </ng-template>
         </td>
       </tr>
     </tbody>
