@@ -32,7 +32,7 @@
           <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" [routerLink]="['/album', album.id]"
             >info</mat-icon
           >
-          <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" [routerLink]="['/edit', album.id]"
+          <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" [routerLink]="['/edit', album.id]" *ngIf="isAuthenticated"
             >edit</mat-icon
           >
           <mat-icon
@@ -40,6 +40,7 @@
             style="cursor: pointer"
             (click)="triggerModal(modalData)"
             class="mr-1"
+            *ngIf="isAuthenticated"
             >delete_forever</mat-icon
           >
           <!-- (click)="onDelete(album.id)" -->

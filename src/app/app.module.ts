@@ -12,6 +12,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlbumDetailComponent } from './album-detail/album-detail.component';
 import { Environment } from './environment';
+import { AuthComponent } from './auth/auth.component';
+import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 
 
 @NgModule({
@@ -21,6 +23,8 @@ import { Environment } from './environment';
     MainContentComponent,
     AddAlbumComponentComponent,
     AlbumDetailComponent,
+    AuthComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     BrowserModule,

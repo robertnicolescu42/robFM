@@ -1,9 +1,18 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  Component,
+  Injectable,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Album } from '../album.model';
-import { map } from 'rxjs/operators';
+import { exhaustMap, map, take } from 'rxjs/operators';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 @Component({
@@ -13,41 +22,20 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 })
 export class MainContentComponent implements OnInit, OnDestroy {
   closeModal: string | undefined;
+  isAuthenticated = false;
+  userSub: Subscription | undefined;
 
-  albums: Album[] = [
-    //   {
-    //     name: 'The Social Network',
-    //     artist: 'Trent Reznor and Atticus Ross',
-    //     year: 2010,
-    //     rating: 10,
-    //     cover: 'https://upload.wikimedia.org/wikipedia/en/1/17/TSN-cover-CD.jpg',
-    //   },
-    //   {
-    //     name: 'Lamentations',
-    //     artist: 'William Basinski',
-    //     year: 2020,
-    //     rating: 8,
-    //     cover: 'https://f4.bcbits.com/img/a2967895462_10.jpg',
-    //   },
-    //   {
-    //     name: 'Demon Days',
-    //     artist: 'Gorillaz',
-    //     year: 2005,
-    //     rating: 4.5,
-    //     cover:
-    //       'https://upload.wikimedia.org/wikipedia/en/d/df/Gorillaz_Demon_Days.PNG',
-    // }
-  ];
-  // albums: Album[] = [];
+  albums: Album[] = [];
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
 
   constructor(
     private http: HttpClient,
     private modalService: NgbModal,
-    // private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService // private route: ActivatedRoute, // private nav: NavbarComponent
   ) {}
+
   getAlbums() {
     return this.albums.slice();
   }
@@ -74,9 +62,20 @@ export class MainContentComponent implements OnInit, OnDestroy {
   }
 
   fetchAlbums() {
-    this.http
-      .get(this.url)
+    return this.authService.user
       .pipe(
+        take(1),
+        exhaustMap((user) => {
+          if (user) {
+            this.isAuthenticated = true;
+            return this.http.get(this.url, {
+              params: new HttpParams().set('auth', user.token!),
+            });
+          } else {
+            this.isAuthenticated = false;
+            return this.http.get(this.url);
+          }
+        }),
         map((responseData: any) => {
           const albumArray: Album[] = [];
           for (const key in responseData) {
@@ -126,6 +125,12 @@ export class MainContentComponent implements OnInit, OnDestroy {
       );
   }
 
+  // onLogout() {
+  //   this.isAuthenticated = false;
+  //   // this.authService.user.next(null!);
+  //   // this.ngOnDestroy();
+  // }
+
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
@@ -137,8 +142,17 @@ export class MainContentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // this.isAuthenticated = this.nav.isAuthenticated;
     this.fetchAlbums();
+    this.userSub = this.authService.user.subscribe((user) => {
+      this.isAuthenticated = !!user;
+    });
+    console.log('main: ' + this.isAuthenticated);
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy() {
+    // if (this.userSub != null) {
+    //   this.userSub.unsubscribe();
+    // }
+  }
 }

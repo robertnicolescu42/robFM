@@ -3,7 +3,13 @@
   <div class="collapse navbar-collapse" id="collapsibleNavId">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       <li class="nav-item">
-        <a class="nav-link" routerLink="/add">Add an album</a>
+        <a class="nav-link" routerLink="/add" *ngIf="isAuthenticated">Add an album</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/auth"*ngIf="!isAuthenticated">Log in</a>
+      </li>
+      <li class="nav-item">
+        <a style="cursor: pointer;" class="nav-link" *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
       </li>
       <!-- <li class="nav-item">
         <a class="nav-link" (click)="onGetData()">Get data</a>
