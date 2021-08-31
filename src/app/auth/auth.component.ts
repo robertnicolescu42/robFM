@@ -1,5 +1,6 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormGroup, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
@@ -15,7 +16,11 @@ export class AuthComponent implements OnInit {
   isLoading = false;
   error = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -35,11 +40,42 @@ export class AuthComponent implements OnInit {
     if (this.isLoginMode) {
       authObs = this.authService.login(email, password);
     } else {
-      authObs = this.authService.signup(email, password, username);
+      authObs = this.authService.signup(email, password);
     }
 
     authObs.subscribe(
       (res) => {
+        if (!this.isLoginMode) {
+          const resData = res;
+          console.log('resData din auth: ' + resData);
+
+          let formData: FormData = new FormData();
+          formData.append('email', res.email);
+          formData.append('username', username);
+
+          var object: any = {};
+          formData.forEach((value, key) => (object[key] = value));
+          var json = JSON.stringify(object);
+
+          this.http
+            .post(
+              'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users/' +
+                // res.localId +
+                '.json',
+              json,
+              {
+                params: new HttpParams().set('auth', res.idToken!),
+              }
+            )
+            .subscribe(() => {
+              console.log('the user was added!');
+            //   console.log(
+            //     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users/' +
+            //       res.localId +
+            //       '.json'
+            //   );
+            });
+        }
         console.log(res);
         this.isLoading = false;
         this.router.navigate(['/main']);

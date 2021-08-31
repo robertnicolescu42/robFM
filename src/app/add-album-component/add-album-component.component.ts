@@ -106,6 +106,11 @@ export class AddAlbumComponentComponent implements OnInit, OnDestroy {
             'The album has been added succesfully!',
             this.albumForm.value
           );
+          console.warn(
+            'AUTH TOKEN!',
+            this.token
+          );
+          
         });
       this.albumForm.reset();
     }

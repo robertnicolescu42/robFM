@@ -24,14 +24,13 @@ export class AuthService {
 
   constructor(private http: HttpClient, private env: Environment) {}
 
-  signup(emailSub: string, usernameSub: string, passwordSub: string) {
+  signup(emailSub: string, passwordSub: string) {
     return this.http
       .post<AuthResponseData>(
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
           this.env.firebaseApiKey,
         {
           email: emailSub,
-          username: usernameSub,
           password: passwordSub,
           returnSecureToken: true,
         }
