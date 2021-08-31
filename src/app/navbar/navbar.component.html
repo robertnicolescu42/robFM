@@ -9,6 +9,9 @@
         <a class="nav-link" routerLink="/auth"*ngIf="!isAuthenticated">Log in</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" routerLink="/profile"*ngIf="isAuthenticated">Profile</a>
+      </li>
+      <li class="nav-item">
         <a style="cursor: pointer;" class="nav-link" *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
       </li>
       <!-- <li class="nav-item">

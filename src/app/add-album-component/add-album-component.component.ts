@@ -1,28 +1,41 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { NavbarComponent } from '../navbar/navbar.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
+import { MainContentComponent } from '../main-content/main-content.component';
 
 @Component({
   selector: 'app-add-album-component',
   templateUrl: './add-album-component.component.html',
   styleUrls: ['./add-album-component.component.css'],
 })
-export class AddAlbumComponentComponent implements OnInit {
+export class AddAlbumComponentComponent implements OnInit, OnDestroy {
+  isAuthenticated = false;
+  userSub!: Subscription;
   constructor(
-    private formBuilder: FormBuilder,
     private http: HttpClient,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private mainContent: MainContentComponent,
+    private router: Router
   ) {}
   editAlbum!: { id: string } | any;
   editMode: boolean = false;
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
   albumForm!: FormGroup;
-  forbiddenTitles = ['googa', 'abooga'];
-
+  forbiddenTitles = ['a', 'b'];
+  token: any;
   ngOnInit(): void {
+    this.userSub = this.authService.user.subscribe((user) => {
+      this.isAuthenticated = !!user;
+      this.token = user.token;
+
+      console.log('nav: ' + this.isAuthenticated);
+      this.mainContent.isAuthenticated = this.isAuthenticated;
+    });
     this.editAlbum = {
       id: this.route.snapshot.params['id'],
     };
@@ -69,20 +82,24 @@ export class AddAlbumComponentComponent implements OnInit {
           'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' +
             this.route.snapshot.params['id'] +
             '.json',
-          this.albumForm.value
+          this.albumForm.value,
+          {
+            params: new HttpParams().set('auth', this.token!),
+          }
         )
-        .subscribe((responseData) => {
+        .subscribe(() => {
           console.log('the album was updated!', this.albumForm.value);
           console.log(
             'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' +
               this.route.snapshot.params['id'] +
-              '.json',
-            this.albumForm.value
+              '.json'
           );
         });
     } else {
       this.http
-        .post(this.url, this.albumForm.value)
+        .post(this.url, this.albumForm.value, {
+          params: new HttpParams().set('auth', this.token!),
+        })
         .subscribe((responseData) => {
           console.log(responseData);
           console.warn(
@@ -92,5 +109,14 @@ export class AddAlbumComponentComponent implements OnInit {
         });
       this.albumForm.reset();
     }
+    // go back to the main page after adding/editing
+    this.router.navigate(['main']);
+    this.mainContent.ngOnDestroy();
+    this.mainContent.ngOnInit();
+    this.mainContent.fetchAlbums();
+  }
+
+  ngOnDestroy() {
+    // this.userSub.unsubscribe();
   }
 }

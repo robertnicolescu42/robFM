@@ -24,7 +24,7 @@ export class MainContentComponent implements OnInit, OnDestroy {
   closeModal: string | undefined;
   isAuthenticated = false;
   userSub: Subscription | undefined;
-
+  token: any;
   albums: Album[] = [];
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
@@ -100,7 +100,10 @@ export class MainContentComponent implements OnInit, OnDestroy {
       .delete(
         'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' +
           albumId +
-          '.json/'
+          '.json/',
+        {
+          params: new HttpParams().set('auth', this.token!),
+        }
       )
       .subscribe((responseData) => {
         console.log(responseData);
@@ -146,6 +149,12 @@ export class MainContentComponent implements OnInit, OnDestroy {
     this.fetchAlbums();
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
+      if (user) {
+        this.token = user.token;
+      }
+      else {
+        this.token = '';
+      }
     });
     console.log('main: ' + this.isAuthenticated);
   }
@@ -154,5 +163,6 @@ export class MainContentComponent implements OnInit, OnDestroy {
     // if (this.userSub != null) {
     //   this.userSub.unsubscribe();
     // }
+    
   }
 }

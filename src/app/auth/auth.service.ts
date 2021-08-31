@@ -10,6 +10,7 @@ export interface AuthResponseData {
   kind: string;
   idToken: string;
   email: string;
+  username: string;
   refreshToken: string;
   expiresIn: string;
   localId: string;
@@ -18,17 +19,19 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  loggedIn = false;
   user = new BehaviorSubject<User>(null!);
 
   constructor(private http: HttpClient, private env: Environment) {}
 
-  signup(emailSub: string, passwordSub: string) {
+  signup(emailSub: string, usernameSub: string, passwordSub: string) {
     return this.http
       .post<AuthResponseData>(
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
           this.env.firebaseApiKey,
         {
           email: emailSub,
+          username: usernameSub,
           password: passwordSub,
           returnSecureToken: true,
         }
@@ -60,6 +63,7 @@ export class AuthService {
       .pipe(
         catchError(this.handleError),
         tap((resData) => {
+          this.loggedIn = true;
           this.handleAuthentication(
             resData.email,
             resData.localId,
@@ -70,7 +74,8 @@ export class AuthService {
       );
   }
 
-  logout(){
+  logout() {
+    this.loggedIn = false;
     this.user.next(null!);
   }
 
@@ -102,5 +107,14 @@ export class AuthService {
     }
 
     return throwError(errorMessage + '.');
+  }
+
+  isAuthenticated() {
+    const promise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(this.loggedIn);
+      }, 800);
+    });
+    return promise;
   }
 }

@@ -14,6 +14,8 @@ import { AlbumDetailComponent } from './album-detail/album-detail.component';
 import { Environment } from './environment';
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
+import { AuthGuard } from './auth/auth-guard.service';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 
 @NgModule({
@@ -24,7 +26,8 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
     AddAlbumComponentComponent,
     AlbumDetailComponent,
     AuthComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -35,7 +38,7 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [MainContentComponent, AddAlbumComponentComponent, Environment],
+  providers: [MainContentComponent, AddAlbumComponentComponent, Environment, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

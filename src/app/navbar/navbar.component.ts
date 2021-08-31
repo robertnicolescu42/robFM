@@ -1,5 +1,4 @@
 import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { MainContentComponent } from '../main-content/main-content.component';
