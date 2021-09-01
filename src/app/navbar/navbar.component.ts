@@ -1,4 +1,5 @@
 import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { MainContentComponent } from '../main-content/main-content.component';
@@ -13,7 +14,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   userSub!: Subscription;
 
-  constructor(private authService: AuthService, private mainContent: MainContentComponent) {}
+  constructor(private authService: AuthService, private mainContent: MainContentComponent, private router: Router) {}
 
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe(user => {
@@ -26,6 +27,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onLogout(){
     this.authService.logout();
+    this.router.navigate(['/main']);
     // this.mainContent.isAuthenticated = false;
     // console.log(this.mainContent);
     

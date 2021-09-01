@@ -8,7 +8,7 @@ import { MainContentComponent } from './main-content/main-content.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 
 const routes: Routes = [
-  { path: '', component: MainContentComponent },
+  { path: '', redirectTo: '/main', pathMatch: 'full' },
   { path: 'main', component: MainContentComponent },
   {
     path: 'add',
