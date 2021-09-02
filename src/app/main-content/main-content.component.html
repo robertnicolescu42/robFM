@@ -30,7 +30,7 @@
         <td>{{ album.artist }}</td>
         <td>{{ album.year }}</td>
         <td>
-          <span class="badge" [ngClass]="getAlbumRating(album)"
+          <span class="badge" [ngClass]="getAlbumRatingFn(album)"
             >{{ album.rating }}/10</span
           >
         </td>

@@ -28,8 +28,7 @@ export class AuthService {
   private tokenExpirationTimer: any;
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users.json';
-  userDBid? = '';
-  wishlist: any = ['323', '424'];
+  userDBid = '';
 
   constructor(private http: HttpClient, private env: Environment) {}
 
@@ -194,7 +193,6 @@ export class AuthService {
         for (var user of users) {
           if (email == user.email) {
             this.userDBid = user.id;
-            this.wishlist = user.wishlist;
           }
         }
       });

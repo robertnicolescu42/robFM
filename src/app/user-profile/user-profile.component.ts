@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AlbumService } from '../shared/album.service';
+import { Album } from '../album.model';
 
 @Component({
   selector: 'app-user-profile',
@@ -24,7 +26,6 @@ export class UserProfileComponent implements OnInit {
   isAdmin: boolean = false;
   token: any;
   currentUserId?: string;
-
   currentUser: {
     email: string;
     username: string;
@@ -37,11 +38,13 @@ export class UserProfileComponent implements OnInit {
     id: 'no-id',
   };
   closeModal: string | undefined;
+  albums: Album[] = [];
 
   constructor(
     private authService: AuthService,
     private http: HttpClient,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private albumService: AlbumService
   ) {}
 
   ngOnInit(): void {
@@ -138,7 +141,48 @@ export class UserProfileComponent implements OnInit {
       });
   }
 
+  getAlbumRatingFn(album: Album) {
+    return this.albumService.getAlbumRating(album);
+  }
+
   getUsers() {
     return this.users.slice();
+  }
+
+  fetchLikedAlbums() {
+    return this.authService.user
+      .pipe(
+        take(1),
+        exhaustMap((user) => {
+          if (user) {
+            this.isAuthenticated = true;
+            return this.http.get(this.url, {
+              params: new HttpParams().set('auth', user.token!),
+            });
+          } else {
+            this.isAuthenticated = false;
+            return this.http.get(this.url);
+          }
+        }),
+        map((responseData: any) => {
+          const albumArray: Album[] = [];
+          for (const key in responseData) {
+            if (responseData.hasOwnProperty(key)) {
+              albumArray.push({ ...responseData[key], id: key });
+            }
+          }
+          //   this.albumData.albums = albumArray;
+          return albumArray;
+        })
+      )
+      .subscribe((albums) => {
+        console.log(albums);
+        //   this.albumData.albums = albums;
+        this.albums = albums;
+      });
+  }
+
+  getAlbums() {
+    return this.albums.slice();
   }
 }

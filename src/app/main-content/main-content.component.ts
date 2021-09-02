@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../auth/user.model';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
+import { AlbumService } from '../shared/album.service';
 
 @Injectable()
 @Component({
@@ -21,7 +22,7 @@ export class MainContentComponent implements OnInit, OnDestroy {
   userSub: Subscription | undefined;
   token: any;
   albums: Album[] = [];
-  currentUserId?: string;
+  currentUserId: string = '';
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
   wishlist: any;
@@ -30,32 +31,16 @@ export class MainContentComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthService // private route: ActivatedRoute, // private nav: NavbarComponent
+    private authService: AuthService, // private route: ActivatedRoute, // private nav: NavbarComponent
+    private albumService: AlbumService
   ) {}
 
   getAlbums() {
     return this.albums.slice();
   }
 
-  getAlbumRating(album: {
-    name: string;
-    artist: string;
-    year: number;
-    rating: number;
-    cover: string;
-  }) {
-    return {
-      'list-group-item-success': album.rating >= 9,
-      'list-group-item-warning': album.rating >= 5 && album.rating < 9,
-      'list-group-item-danger': album.rating < 5,
-    };
-  }
-
-  storeAlbums() {
-    const albums = this.getAlbums();
-    this.http.put(this.url, albums).subscribe((response) => {
-      console.log(response);
-    });
+  getAlbumRatingFn(album: Album) {
+    return this.albumService.getAlbumRating(album);
   }
 
   fetchAlbums() {
@@ -148,9 +133,11 @@ export class MainContentComponent implements OnInit, OnDestroy {
       this.isAuthenticated = !!user;
       if (user) {
         this.token = user.token;
+        this.authService.getUserId(user.email);
+        this.currentUserId = this.authService.userDBid;
       } else {
         this.token = '';
-        this.currentUserId = '';
+        // this.currentUserId = '';
       }
     });
     console.log('main: ' + this.isAuthenticated);
@@ -163,35 +150,31 @@ export class MainContentComponent implements OnInit, OnDestroy {
   }
 
   wishlistAlbum(albumId: string) {
+    let formData: FormData = new FormData();
+    var json: string;
     this.userSub = this.authService.user.subscribe((user) => {
       this.authService.getUserId(user.email);
-      this.currentUserId = this.authService.userDBid;
-      this.wishlist = this.authService.wishlist;
-      this.wishlist.push(albumId);
+      console.log('main user id: ' + this.authService.userDBid);
+
+      // this.currentUserId = this.authService.userDBid;
     });
 
-    let formData: FormData = new FormData();
-    // let wishlist: string[] = this.authService.wishlist;
-    // console.log(wishlist);
-    // wishlist.push(albumId)
-    this.wishlist.forEach((el: string) => {
-      formData.append('albumId', el);
-    });
-
+    formData.append('userId', this.currentUserId);
+    formData.append('albumId', albumId);
     var object: any = {};
     formData.forEach((value, key) => (object[key] = value));
-    var json = JSON.stringify(object);
+    json = JSON.stringify(object);
 
-    this.http
-      .put(
-        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users/' +
-          this.currentUserId +
-          '/wishlist.json',
-        json,
-        {
-          params: new HttpParams().set('auth', this.token!),
-        }
-      )
+    return this.http
+    .post(
+      'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/wishlist/' +
+        // res.localId +
+        '.json',
+      json,
+      {
+        params: new HttpParams().set('auth', this.token!),
+      }
+    )
       .subscribe((responseData) => {
         console.log(responseData);
         console.warn('The album has been added to the wishlist!');
