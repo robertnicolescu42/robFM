@@ -1,6 +1,10 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, throwError } from 'rxjs';
 
 import { Environment } from '../environment';
@@ -22,6 +26,10 @@ export class AuthService {
   loggedIn = false;
   user = new BehaviorSubject<User>(null!);
   private tokenExpirationTimer: any;
+  url: string =
+    'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users.json';
+  userDBid? = '';
+  wishlist: any = ['323', '424'];
 
   constructor(private http: HttpClient, private env: Environment) {}
 
@@ -157,5 +165,38 @@ export class AuthService {
       }, 800);
     });
     return promise;
+  }
+
+  getUserId(email: string) {
+    return this.user
+      .pipe(
+        take(1),
+        exhaustMap((user) => {
+          if (user) {
+            return this.http.get(this.url, {
+              params: new HttpParams().set('auth', user.token!),
+            });
+          } else {
+            return this.http.get(this.url);
+          }
+        }),
+        map((responseData: any) => {
+          const userArray = [];
+          for (const key in responseData) {
+            if (responseData.hasOwnProperty(key)) {
+              userArray.push({ ...responseData[key], id: key });
+            }
+          }
+          return userArray;
+        })
+      )
+      .subscribe((users) => {
+        for (var user of users) {
+          if (email == user.email) {
+            this.userDBid = user.id;
+            this.wishlist = user.wishlist;
+          }
+        }
+      });
   }
 }

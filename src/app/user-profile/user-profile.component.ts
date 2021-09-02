@@ -19,16 +19,22 @@ export class UserProfileComponent implements OnInit {
     email: string;
     username: string;
     admin?: boolean;
+    id: string;
   }[] = [];
   isAdmin: boolean = false;
+  token: any;
+  currentUserId?: string;
+
   currentUser: {
     email: string;
     username: string;
     admin?: boolean;
+    id: string;
   } = {
     email: 'no email',
     username: 'no username',
     admin: false,
+    id: 'no-id',
   };
   closeModal: string | undefined;
 
@@ -41,10 +47,12 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
-      // console.log('nav: ' + this.isAuthenticated);
-      // console.log(user);
       this.checkUserType(user.email);
-      // console.log('user.admin: ' + this.isAdmin);
+      if (user) {
+        this.token = user.token;
+      } else {
+        this.token = '';
+      }
     });
   }
 
@@ -70,19 +78,15 @@ export class UserProfileComponent implements OnInit {
               userArray.push({ ...responseData[key], id: key });
             }
           }
-          //   this.albumData.albums = albumArray;
           return userArray;
         })
       )
       .subscribe((users) => {
-        // console.log(users);
-        //   this.albumData.albums = albums;
         this.users = users;
-        // console.log(currentUserEmail);
 
         for (var user of users) {
           if (currentUserEmail == user.email && user.admin == true) {
-            // console.log('user.admin: ' + user.admin);
+            this.currentUserId = user.id;
             this.isAdmin = true;
             this.currentUser = user;
           }
@@ -96,7 +100,6 @@ export class UserProfileComponent implements OnInit {
       .result.then(
         (res: any) => {
           this.closeModal = `Closed with: ${res}`;
-          // this.router.navigate(['main']);
           this.ngOnInit();
         },
         (res: any) => {
@@ -113,5 +116,29 @@ export class UserProfileComponent implements OnInit {
     } else {
       return `with: ${reason}`;
     }
+  }
+
+  //firebase needs cloud functions to delete any user other than
+  //the current user, so here i can only delete the user's info from
+  //the realtime database (firebase limitation)
+  onDeleteUser(userId: string) {
+    return this.http
+      .delete(
+        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users/' +
+          userId +
+          '.json/',
+        {
+          params: new HttpParams().set('auth', this.token!),
+        }
+      )
+      .subscribe((responseData) => {
+        console.log(responseData);
+        // this.router.navigate(['main']);
+        this.ngOnInit();
+      });
+  }
+
+  getUsers() {
+    return this.users.slice();
   }
 }

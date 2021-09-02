@@ -10,20 +10,41 @@
           <th>User email</th>
           <th>Username</th>
           <th>Actions</th>
+          <th>db id</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of users">
+        <tr *ngFor="let user of getUsers()">
           <td scope="row">{{ user.email }}</td>
           <td>{{ user.username }}</td>
+          <td>{{ user.id }}</td>
           <td>
             <mat-icon
               aria-hidden="false"
               style="cursor: pointer"
+              (click)="triggerModal(modalData)"
               class="mr-1"
               *ngIf="isAuthenticated"
               >delete_forever</mat-icon
             >
+            <ng-template #modalData let-modal>
+                <div class="modal-header">
+                  <h4 class="modal-title" id="modal-basic-title">Are you sure?</h4>
+                  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Are you sure you want to delete <span class="text-primary">{{ user.username }}</span> ? </strong></p>
+                  
+                  <p>All data related to this user will be removed permanently.
+                  </p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" (click)="onDeleteUser(user.id); modal.close('Save click'); ">Delete</button>
+                  <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Close</button>
+                </div>
+              </ng-template>
           </td>
         </tr>
       </tbody>

@@ -1,18 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import {
-  Component,
-  Injectable,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Album } from '../album.model';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-import { NavbarComponent } from '../navbar/navbar.component';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { User } from '../auth/user.model';
+import { UserProfileComponent } from '../user-profile/user-profile.component';
 
 @Injectable()
 @Component({
@@ -26,8 +21,10 @@ export class MainContentComponent implements OnInit, OnDestroy {
   userSub: Subscription | undefined;
   token: any;
   albums: Album[] = [];
+  currentUserId?: string;
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
+  wishlist: any;
 
   constructor(
     private http: HttpClient,
@@ -151,9 +148,9 @@ export class MainContentComponent implements OnInit, OnDestroy {
       this.isAuthenticated = !!user;
       if (user) {
         this.token = user.token;
-      }
-      else {
+      } else {
         this.token = '';
+        this.currentUserId = '';
       }
     });
     console.log('main: ' + this.isAuthenticated);
@@ -163,6 +160,41 @@ export class MainContentComponent implements OnInit, OnDestroy {
     // if (this.userSub != null) {
     //   this.userSub.unsubscribe();
     // }
-    
+  }
+
+  wishlistAlbum(albumId: string) {
+    this.userSub = this.authService.user.subscribe((user) => {
+      this.authService.getUserId(user.email);
+      this.currentUserId = this.authService.userDBid;
+      this.wishlist = this.authService.wishlist;
+      this.wishlist.push(albumId);
+    });
+
+    let formData: FormData = new FormData();
+    // let wishlist: string[] = this.authService.wishlist;
+    // console.log(wishlist);
+    // wishlist.push(albumId)
+    this.wishlist.forEach((el: string) => {
+      formData.append('albumId', el);
+    });
+
+    var object: any = {};
+    formData.forEach((value, key) => (object[key] = value));
+    var json = JSON.stringify(object);
+
+    this.http
+      .put(
+        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users/' +
+          this.currentUserId +
+          '/wishlist.json',
+        json,
+        {
+          params: new HttpParams().set('auth', this.token!),
+        }
+      )
+      .subscribe((responseData) => {
+        console.log(responseData);
+        console.warn('The album has been added to the wishlist!');
+      });
   }
 }
