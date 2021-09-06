@@ -25,7 +25,7 @@ export class UserProfileComponent implements OnInit {
   }[] = [];
   isAdmin: boolean = false;
   token: any;
-  currentUserId: string = "";
+  currentUserId: string = '';
   currentUser: {
     email: string;
     username: string;
@@ -39,6 +39,7 @@ export class UserProfileComponent implements OnInit {
   };
   closeModal: string | undefined;
   albums: Album[] = [];
+  likedAlbums: Album[] = [];
 
   constructor(
     private authService: AuthService,
@@ -50,7 +51,10 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
+      console.log('user mail:' + user.email);
+
       this.checkUserType(user.email);
+
       if (user) {
         this.token = user.token;
       } else {
@@ -88,10 +92,19 @@ export class UserProfileComponent implements OnInit {
         this.users = users;
 
         for (var user of users) {
-          if (currentUserEmail == user.email && user.admin == true) {
+          if (currentUserEmail == user.email) {
+            console.log('user: ', user);
+
             this.currentUserId = user.id;
-            this.isAdmin = true;
             this.currentUser = user;
+
+            this.albumService.fetchLikedAlbums(this.currentUserId);
+            this.likedAlbums = this.albumService.likedAlbums;
+            if (user.admin == true) {
+              this.isAdmin = true;
+            } else {
+              this.isAdmin = false;
+            }
           }
         }
       });
@@ -182,12 +195,11 @@ export class UserProfileComponent implements OnInit {
   //     });
   // }
 
+  getLikedAlbums() {}
+
   getAlbums() {
-    this.albumService.fetchLikedAlbums(this.currentUser.id);
-     var likedAlbums = this.albumService.likedAlbums;
-     console.log(likedAlbums);
-     
-    
-    return this.albums.slice();
+    console.log('liked albums: ' + this.likedAlbums.slice());
+
+    // return this.likedAlbums.slice();
   }
 }
