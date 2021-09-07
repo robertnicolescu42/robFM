@@ -7,7 +7,7 @@ import { AuthService } from '../auth/auth.service';
 @Injectable({ providedIn: 'root' })
 export class AlbumService {
   albums: Album[] = [];
-  likedAlbums: Album[] = [];
+  likedAlbums: Album[] = [new Album("", "", 0, 0, "", "", "")];
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
 
@@ -81,7 +81,15 @@ export class AlbumService {
       .subscribe((wishlist) => {
         for (var item of wishlist) {
           if (userId == item.userId) {
-            this.likedAlbums.push(item.albumId);
+            this.likedAlbums.push({
+              name: "",
+              artist: "",
+              year: 0,
+              rating: 0,
+              cover: "",
+              id: item.albumId,
+              wishlistId: item.id,
+            });
           }
         }
       });

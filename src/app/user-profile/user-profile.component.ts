@@ -1,18 +1,19 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlbumService } from '../shared/album.service';
 import { Album } from '../album.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnChanges {
   isAuthenticated = false;
   userSub!: Subscription;
   url: string =
@@ -45,7 +46,8 @@ export class UserProfileComponent implements OnInit {
     private authService: AuthService,
     private http: HttpClient,
     private modalService: NgbModal,
-    private albumService: AlbumService
+    private albumService: AlbumService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -144,7 +146,22 @@ export class UserProfileComponent implements OnInit {
           params: new HttpParams().set('auth', this.token!),
         }
       )
-      .subscribe((responseData) => {
+      .subscribe(() => {
+        this.ngOnInit();
+      });
+  }
+
+  onDeleteAlbumFromWishlist(wishlistId: string) {
+    return this.http
+      .delete(
+        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/wishlist/' +
+          wishlistId +
+          '.json/',
+        {
+          params: new HttpParams().set('auth', this.token!),
+        }
+      )
+      .subscribe(() => {
         this.ngOnInit();
       });
   }
@@ -160,33 +177,24 @@ export class UserProfileComponent implements OnInit {
   getTransformedLikedAlbums() {
     let parsed: Album[] = [];
     let found: any;
-    
-    for (let albumId of this.likedAlbums) {
+
+    for (let album of this.likedAlbums) {
       found = this.albumService.albums.find(
-        (al) => al.id == albumId.toString()
+        (al) => al.id == album.id.toString()
       );
 
       if (found != undefined) {
         if (!parsed.find((element) => element == found)) {
+          found.wishlistId = album.wishlistId;
           parsed.push(found);
         }
       }
     }
+
     return parsed;
   }
 
-  onDeleteAlbumFromWishlist(wishlistId: string) {
-    return this.http
-      .delete(
-        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/wishlist/' +
-          wishlistId +
-          '.json/',
-        {
-          params: new HttpParams().set('auth', this.token!),
-        }
-      )
-      .subscribe((responseData) => {
-        this.ngOnInit();
-      });
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes);
   }
 }

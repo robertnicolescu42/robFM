@@ -82,8 +82,7 @@ export class MainContentComponent implements OnInit {
           params: new HttpParams().set('auth', this.token!),
         }
       )
-      .subscribe((responseData) => {
-        console.log(responseData);
+      .subscribe(() => {
         this.ngOnInit();
       });
   }
@@ -126,7 +125,7 @@ export class MainContentComponent implements OnInit {
         this.token = '';
       }
     });
-    console.log('main: ' + this.isAuthenticated);
+    // console.log('main: ' + this.isAuthenticated);
   }
 
   wishlistAlbum(albumId: string) {
@@ -152,9 +151,9 @@ export class MainContentComponent implements OnInit {
           params: new HttpParams().set('auth', this.token!),
         }
       )
-      .subscribe((responseData) => {
-        console.log(responseData);
-        console.warn('The album has been added to the wishlist!');
+      .subscribe(() => {
+        // console.log(responseData);
+        // console.warn('The album has been added to the wishlist!');
       });
   }
 

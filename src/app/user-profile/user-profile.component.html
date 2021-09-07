@@ -37,7 +37,7 @@
             (click)="triggerModal(modalData)"
             class="mr-1"
             *ngIf="isAuthenticated"
-            >delete_forever</mat-icon
+            >delete</mat-icon
           >
           <!-- (click)="onDelete(album.id)" -->
           <ng-template #modalData let-modal>
@@ -59,7 +59,6 @@
                   <span class="text-primary">{{ album.name }}</span> by
                   <span class="text-primary">{{ album.artist }}</span
                   >?
-                  <span>Db id: {{ album.wishlistId }}</span>
                 </strong>
               </p>
 
@@ -70,7 +69,7 @@
                 type="button"
                 class="btn btn-danger"
                 (click)="
-                onDeleteAlbumFromWishlist(album.id); modal.close('Save click')
+                onDeleteAlbumFromWishlist(album.wishlistId!); modal.close('Save click');
                 "
               >
                 Delete
