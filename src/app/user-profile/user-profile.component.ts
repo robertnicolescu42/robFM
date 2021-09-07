@@ -183,7 +183,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       }
     }
 
-    console.log('a rulat functia');
+    // console.log('a rulat functia');
     return parsed;
   }
 
