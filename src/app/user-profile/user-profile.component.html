@@ -2,7 +2,7 @@
   <p>isAuthenticated: {{ isAuthenticated }}</p>
   <p>username: {{ currentUser.username }}</p>
   <p>admin: {{ isAdmin }}</p>
-  <button type="button" class="btn btn-primary" (click)="getAlbums()">get liked albums</button>
+  <!-- <button type="button" class="btn btn-primary" (click)="getTransformedLikedAlbums()">get liked albums</button> -->
 
   
   <!-- wishlist table -->
@@ -22,8 +22,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let album of likedAlbums" class=""> 
-      <!-- <td scope="row">
+    <tr *ngFor="let album of getTransformedLikedAlbums()" class=""> 
+      <td scope="row">
         <img src="{{ album.cover }}" alt="" width="50%" class="img-fluid" />
       </td>
       <td class="h6">{{ album.name }}</td>
@@ -33,8 +33,7 @@
         <span class="badge" [ngClass]="getAlbumRatingFn(album)"
         >{{ album.rating }}/10</span
         >
-      </td> -->
-      <td> {{ album }} </td>
+      </td>
     </tr>
   </tbody>
 </table>

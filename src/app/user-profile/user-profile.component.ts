@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
@@ -12,7 +12,7 @@ import { Album } from '../album.model';
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   userSub!: Subscription;
   url: string =
@@ -40,6 +40,7 @@ export class UserProfileComponent implements OnInit {
   closeModal: string | undefined;
   albums: Album[] = [];
   likedAlbums: Album[] = [];
+  parsedLikedAlbums: Album[] = [];
 
   constructor(
     private authService: AuthService,
@@ -51,16 +52,18 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
-      console.log('user mail:' + user.email);
+      // console.log('user mail:' + user.email);
 
       this.checkUserType(user.email);
-
       if (user) {
         this.token = user.token;
       } else {
         this.token = '';
       }
+      // console.log(this.getTransformedLikedAlbums());
     });
+
+    // console.log(this.getTransformedLikedAlbums());
   }
 
   checkUserType(currentUserEmail: string) {
@@ -93,13 +96,16 @@ export class UserProfileComponent implements OnInit {
 
         for (var user of users) {
           if (currentUserEmail == user.email) {
-            console.log('user: ', user);
+            // console.log('user: ', user);
 
             this.currentUserId = user.id;
             this.currentUser = user;
 
             this.albumService.fetchLikedAlbums(this.currentUserId);
             this.likedAlbums = this.albumService.likedAlbums;
+            // console.log('2 liked albums: ' + this.parsedLikedAlbums);
+            this.parsedLikedAlbums = [];
+
             if (user.admin == true) {
               this.isAdmin = true;
             } else {
@@ -148,7 +154,7 @@ export class UserProfileComponent implements OnInit {
         }
       )
       .subscribe((responseData) => {
-        console.log(responseData);
+        // console.log(responseData);
         // this.router.navigate(['main']);
         this.ngOnInit();
       });
@@ -162,44 +168,28 @@ export class UserProfileComponent implements OnInit {
     return this.users.slice();
   }
 
-  // fetchLikedAlbums() {
-  //   return this.authService.user
-  //     .pipe(
-  //       take(1),
-  //       exhaustMap((user) => {
-  //         if (user) {
-  //           this.isAuthenticated = true;
-  //           return this.http.get(this.url, {
-  //             params: new HttpParams().set('auth', user.token!),
-  //           });
-  //         } else {
-  //           this.isAuthenticated = false;
-  //           return this.http.get(this.url);
-  //         }
-  //       }),
-  //       map((responseData: any) => {
-  //         const albumArray: Album[] = [];
-  //         for (const key in responseData) {
-  //           if (responseData.hasOwnProperty(key)) {
-  //             albumArray.push({ ...responseData[key], id: key });
-  //           }
-  //         }
-  //         //   this.albumData.albums = albumArray;
-  //         return albumArray;
-  //       })
-  //     )
-  //     .subscribe((albums) => {
-  //       console.log(albums);
-  //       //   this.albumData.albums = albums;
-  //       this.albums = albums;
-  //     });
-  // }
+  getTransformedLikedAlbums() {
+    let parsed: Album[] = [];
+    let found: any;
+    for (let albumId of this.likedAlbums) {
+      found = this.albumService.albums.find(
+        (al) => al.id == albumId.toString()
+      );
 
-  getLikedAlbums() {}
+      if (found != undefined) {
+        if (!parsed.find((element) => element == found)) {
+          parsed.push(found);
+        }
+      }
+    }
+
+    console.log('a rulat functia');
+    return parsed;
+  }
 
   getAlbums() {
     console.log('liked albums: ' + this.likedAlbums.slice());
-
-    // return this.likedAlbums.slice();
   }
+
+  ngOnDestroy() {}
 }

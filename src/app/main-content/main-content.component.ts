@@ -6,8 +6,6 @@ import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { User } from '../auth/user.model';
-import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { AlbumService } from '../shared/album.service';
 
 @Injectable()
@@ -32,7 +30,7 @@ export class MainContentComponent implements OnInit, OnDestroy {
     private modalService: NgbModal,
     private router: Router,
     private authService: AuthService, // private route: ActivatedRoute, // private nav: NavbarComponent
-    private albumService: AlbumService
+    private albumService: AlbumService,
   ) {}
 
   getAlbums() {
