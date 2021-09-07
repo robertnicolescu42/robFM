@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { Album } from '../album.model';
 import { AuthService } from '../auth/auth.service';
@@ -11,13 +11,7 @@ export class AlbumService {
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
 
-  getAlbumRating(album: {
-    name: string;
-    artist: string;
-    year: number;
-    rating: number;
-    cover: string;
-  }) {
+  getAlbumRating(album: Album) {
     return {
       'list-group-item-success': album.rating >= 9,
       'list-group-item-warning': album.rating >= 5 && album.rating < 9,
@@ -47,12 +41,10 @@ export class AlbumService {
               albumArray.push({ ...responseData[key], id: key });
             }
           }
-          //   this.albumData.albums = albumArray;
           return albumArray;
         })
       )
       .subscribe((albums) => {
-        //   this.albumData.albums = albums;
         this.albums = albums;
       });
   }
@@ -87,17 +79,11 @@ export class AlbumService {
         })
       )
       .subscribe((wishlist) => {
-        // console.log('userId: ' + userId);
-        
         for (var item of wishlist) {
-          // console.log('item.userId: ' + item.userId);
-          // console.log(item);
-
           if (userId == item.userId) {
             this.likedAlbums.push(item.albumId);
           }
         }
-        // console.log(this.likedAlbums);
       });
   }
 }

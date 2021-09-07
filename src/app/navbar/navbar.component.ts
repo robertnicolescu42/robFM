@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { MainContentComponent } from '../main-content/main-content.component';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -14,39 +14,27 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   userSub!: Subscription;
 
-  constructor(private authService: AuthService, private mainContent: MainContentComponent, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private mainContent: MainContentComponent,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.userSub = this.authService.user.subscribe(user => {
+    this.userSub = this.authService.user.subscribe((user) => {
       // this.isAuthenticated = !user ? false: true;
       this.isAuthenticated = !!user;
-      console.log("nav: " + this.isAuthenticated);
+      console.log('nav: ' + this.isAuthenticated);
       this.mainContent.isAuthenticated = this.isAuthenticated;
     });
   }
 
-  onLogout(){
+  onLogout() {
     this.authService.logout();
     this.router.navigate(['/main']);
-    // this.mainContent.isAuthenticated = false;
-    // console.log(this.mainContent);
-    
-    // this.isAuthenticated = false;
   }
 
   ngOnDestroy() {
     this.userSub.unsubscribe();
   }
-
-  // onGetData() {
-  //   this.mainContent.fetchAlbums();
-  // }
-
-  // onSaveData() {
-  //   this.mainContent.storeAlbums();
-  // }
-
-  // getEditMode() {
-  //   return this.add.editMode;
-  // }
 }

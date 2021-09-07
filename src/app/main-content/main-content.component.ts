@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { Album } from '../album.model';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,7 +14,7 @@ import { AlbumService } from '../shared/album.service';
   templateUrl: './main-content.component.html',
   styleUrls: ['./main-content.component.css'],
 })
-export class MainContentComponent implements OnInit, OnDestroy {
+export class MainContentComponent implements OnInit {
   closeModal: string | undefined;
   isAuthenticated = false;
   userSub: Subscription | undefined;
@@ -29,8 +29,8 @@ export class MainContentComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthService, // private route: ActivatedRoute, // private nav: NavbarComponent
-    private albumService: AlbumService,
+    private authService: AuthService,
+    private albumService: AlbumService
   ) {}
 
   getAlbums() {
@@ -63,19 +63,16 @@ export class MainContentComponent implements OnInit, OnDestroy {
               albumArray.push({ ...responseData[key], id: key });
             }
           }
-          //   this.albumData.albums = albumArray;
           return albumArray;
         })
       )
       .subscribe((albums) => {
         console.log(albums);
-        //   this.albumData.albums = albums;
         this.albums = albums;
       });
   }
 
   onDelete(albumId: string, albumName: string) {
-    // this.triggerModal('Deleted ' + albumName);
     return this.http
       .delete(
         'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' +
@@ -87,7 +84,6 @@ export class MainContentComponent implements OnInit, OnDestroy {
       )
       .subscribe((responseData) => {
         console.log(responseData);
-        // this.router.navigate(['main']);
         this.ngOnInit();
       });
   }
@@ -108,12 +104,6 @@ export class MainContentComponent implements OnInit, OnDestroy {
       );
   }
 
-  // onLogout() {
-  //   this.isAuthenticated = false;
-  //   // this.authService.user.next(null!);
-  //   // this.ngOnDestroy();
-  // }
-
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
@@ -125,7 +115,6 @@ export class MainContentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.isAuthenticated = this.nav.isAuthenticated;
     this.fetchAlbums();
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
@@ -135,16 +124,9 @@ export class MainContentComponent implements OnInit, OnDestroy {
         this.currentUserId = this.authService.userDBid;
       } else {
         this.token = '';
-        // this.currentUserId = '';
       }
     });
     console.log('main: ' + this.isAuthenticated);
-  }
-
-  ngOnDestroy() {
-    // if (this.userSub != null) {
-    //   this.userSub.unsubscribe();
-    // }
   }
 
   wishlistAlbum(albumId: string) {
@@ -153,8 +135,6 @@ export class MainContentComponent implements OnInit, OnDestroy {
     this.userSub = this.authService.user.subscribe((user) => {
       this.authService.getUserId(user.email);
       console.log('main user id: ' + this.authService.userDBid);
-
-      // this.currentUserId = this.authService.userDBid;
     });
 
     formData.append('userId', this.currentUserId);
@@ -164,18 +144,21 @@ export class MainContentComponent implements OnInit, OnDestroy {
     json = JSON.stringify(object);
 
     return this.http
-    .post(
-      'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/wishlist/' +
-        // res.localId +
-        '.json',
-      json,
-      {
-        params: new HttpParams().set('auth', this.token!),
-      }
-    )
+      .post(
+        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/wishlist/' +
+          '.json',
+        json,
+        {
+          params: new HttpParams().set('auth', this.token!),
+        }
+      )
       .subscribe((responseData) => {
         console.log(responseData);
         console.warn('The album has been added to the wishlist!');
       });
+  }
+
+  inWishlist(): boolean {
+    return false;
   }
 }

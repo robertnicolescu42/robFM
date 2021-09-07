@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
@@ -12,7 +12,7 @@ import { Album } from '../album.model';
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
-export class UserProfileComponent implements OnInit, OnDestroy {
+export class UserProfileComponent implements OnInit {
   isAuthenticated = false;
   userSub!: Subscription;
   url: string =
@@ -40,7 +40,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   closeModal: string | undefined;
   albums: Album[] = [];
   likedAlbums: Album[] = [];
-  parsedLikedAlbums: Album[] = [];
 
   constructor(
     private authService: AuthService,
@@ -52,7 +51,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
-      // console.log('user mail:' + user.email);
 
       this.checkUserType(user.email);
       if (user) {
@@ -60,10 +58,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       } else {
         this.token = '';
       }
-      // console.log(this.getTransformedLikedAlbums());
     });
-
-    // console.log(this.getTransformedLikedAlbums());
   }
 
   checkUserType(currentUserEmail: string) {
@@ -96,15 +91,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
         for (var user of users) {
           if (currentUserEmail == user.email) {
-            // console.log('user: ', user);
-
             this.currentUserId = user.id;
             this.currentUser = user;
 
             this.albumService.fetchLikedAlbums(this.currentUserId);
             this.likedAlbums = this.albumService.likedAlbums;
-            // console.log('2 liked albums: ' + this.parsedLikedAlbums);
-            this.parsedLikedAlbums = [];
 
             if (user.admin == true) {
               this.isAdmin = true;
@@ -154,8 +145,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         }
       )
       .subscribe((responseData) => {
-        // console.log(responseData);
-        // this.router.navigate(['main']);
         this.ngOnInit();
       });
   }
@@ -171,6 +160,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   getTransformedLikedAlbums() {
     let parsed: Album[] = [];
     let found: any;
+    
     for (let albumId of this.likedAlbums) {
       found = this.albumService.albums.find(
         (al) => al.id == albumId.toString()
@@ -182,14 +172,21 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         }
       }
     }
-
-    // console.log('a rulat functia');
     return parsed;
   }
 
-  getAlbums() {
-    console.log('liked albums: ' + this.likedAlbums.slice());
+  onDeleteAlbumFromWishlist(wishlistId: string) {
+    return this.http
+      .delete(
+        'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/wishlist/' +
+          wishlistId +
+          '.json/',
+        {
+          params: new HttpParams().set('auth', this.token!),
+        }
+      )
+      .subscribe((responseData) => {
+        this.ngOnInit();
+      });
   }
-
-  ngOnDestroy() {}
 }

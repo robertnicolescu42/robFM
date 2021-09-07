@@ -11,7 +11,7 @@ import { MainContentComponent } from '../main-content/main-content.component';
   templateUrl: './add-album-component.component.html',
   styleUrls: ['./add-album-component.component.css'],
 })
-export class AddAlbumComponentComponent implements OnInit, OnDestroy {
+export class AddAlbumComponentComponent implements OnInit {
   isAuthenticated = false;
   userSub!: Subscription;
   constructor(
@@ -106,22 +106,13 @@ export class AddAlbumComponentComponent implements OnInit, OnDestroy {
             'The album has been added succesfully!',
             this.albumForm.value
           );
-          console.warn(
-            'AUTH TOKEN!',
-            this.token
-          );
-          
+          console.warn('AUTH TOKEN!', this.token);
         });
       this.albumForm.reset();
     }
     // go back to the main page after adding/editing
     this.router.navigate(['main']);
-    this.mainContent.ngOnDestroy();
     this.mainContent.ngOnInit();
     this.mainContent.fetchAlbums();
-  }
-
-  ngOnDestroy() {
-    // this.userSub.unsubscribe();
   }
 }
