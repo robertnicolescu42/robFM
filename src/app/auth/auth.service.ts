@@ -186,6 +186,7 @@ export class AuthService {
               userArray.push({ ...responseData[key], id: key });
             }
           }
+
           return userArray;
         })
       )

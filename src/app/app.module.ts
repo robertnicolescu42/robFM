@@ -38,7 +38,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [MainContentComponent, AddAlbumComponentComponent, Environment, AuthGuard],
+  providers: [MainContentComponent, AddAlbumComponentComponent, Environment, AuthGuard, UserProfileComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

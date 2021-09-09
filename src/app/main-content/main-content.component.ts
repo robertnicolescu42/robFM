@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AlbumService } from '../shared/album.service';
+import { UserProfileComponent } from '../user-profile/user-profile.component';
 
 @Injectable()
 @Component({
@@ -24,13 +25,15 @@ export class MainContentComponent implements OnInit {
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
   wishlist: any;
+  likedAlbums: Album[] = [];
 
   constructor(
     private http: HttpClient,
     private modalService: NgbModal,
     private router: Router,
     private authService: AuthService,
-    private albumService: AlbumService
+    private albumService: AlbumService,
+    private userProfile: UserProfileComponent
   ) {}
 
   getAlbums() {
@@ -69,6 +72,8 @@ export class MainContentComponent implements OnInit {
       .subscribe((albums) => {
         console.log(albums);
         this.albums = albums;
+
+        this.inWishlist('a');
       });
   }
 
@@ -115,8 +120,14 @@ export class MainContentComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAlbums();
+    this.userProfile.ngOnInit();
+    this.likedAlbums = this.userProfile.likedAlbums;
+    console.log('liked albums:');
+    console.log(this.likedAlbums);
+
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
+
       if (user) {
         this.token = user.token;
         this.authService.getUserId(user.email);
@@ -157,7 +168,16 @@ export class MainContentComponent implements OnInit {
       });
   }
 
-  inWishlist(): boolean {
+  inWishlist(albumId: string): boolean {
+    // console.log('in wishlist:');
+    // console.log('user db id: ' + this.authService.userDBid);
+    // console.log('album id: ' + albumId);
+    // console.log('current albums: ' + this.albums);
+
+    // console.log('album ' + element.name + ' is in wishlist!');
+
     return false;
   }
+
+  checkWishlistTable(userDBid: string, albumId: string) {}
 }
