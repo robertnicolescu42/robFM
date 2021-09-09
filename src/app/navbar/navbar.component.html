@@ -6,7 +6,7 @@
         <a class="nav-link" routerLink="/add" *ngIf="isAuthenticated">Add an album</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/auth"*ngIf="!isAuthenticated">Log in</a>
+        <a class="nav-link" routerLink="/auth" *ngIf="!isAuthenticated && !getLoginRoute()">Log in</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" routerLink="/profile"*ngIf="isAuthenticated">Profile</a>

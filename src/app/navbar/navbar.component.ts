@@ -11,8 +11,9 @@ import { MainContentComponent } from '../main-content/main-content.component';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  isAuthenticated = false;
+  isAuthenticated: boolean = false;
   userSub!: Subscription;
+  onLoginPage: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -24,7 +25,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.userSub = this.authService.user.subscribe((user) => {
       // this.isAuthenticated = !user ? false: true;
       this.isAuthenticated = !!user;
-      console.log('nav: ' + this.isAuthenticated);
+      // console.log('nav: ' + this.isAuthenticated);
       this.mainContent.isAuthenticated = this.isAuthenticated;
     });
   }
@@ -36,5 +37,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.userSub.unsubscribe();
+  }
+
+  getLoginRoute() {
+    if(this.router.url == '/auth') {
+      return true;
+    }
+    return false;
   }
 }

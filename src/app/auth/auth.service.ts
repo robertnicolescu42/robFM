@@ -29,7 +29,7 @@ export class AuthService {
   url: string =
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users.json';
   userDBid = '';
-
+  isAdmin: boolean = false;
   constructor(private http: HttpClient, private env: Environment) {}
 
   signup(emailSub: string, passwordSub: string) {
@@ -197,5 +197,56 @@ export class AuthService {
           }
         }
       });
+  }
+
+  checkUserType(currentUserEmail: string) {
+    return this.user
+      .pipe(
+        take(1),
+        exhaustMap((user) => {
+          if (user) {
+            return this.http.get(
+              'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users.json',
+              {
+                params: new HttpParams().set('auth', user.token!),
+              }
+            );
+          } else {
+            return this.http.get(
+              'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/users.json'
+            );
+          }
+        }),
+        map((responseData: any) => {
+          const userArray = [];
+          for (const key in responseData) {
+            if (responseData.hasOwnProperty(key)) {
+              userArray.push({ ...responseData[key], id: key });
+            }
+          }
+          return userArray;
+        })
+      )
+      .subscribe((users) => {
+        for (var user of users) {
+          // console.log(user);
+          
+          if (currentUserEmail == user.email) {
+            //still working on the logic
+            if (user.admin == true) {
+              // console.log("is admin");
+              this.isAdmin = true;
+            } else {
+              this.isAdmin = false;
+            }
+            break;
+          }
+        }
+      });
+  }
+
+  getAdminStatus(email: string) {
+    this.checkUserType(email);
+    return this.isAdmin;
   }
 }

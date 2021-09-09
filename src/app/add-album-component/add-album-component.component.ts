@@ -1,6 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -33,7 +38,7 @@ export class AddAlbumComponentComponent implements OnInit {
       this.isAuthenticated = !!user;
       this.token = user.token;
 
-      console.log('nav: ' + this.isAuthenticated);
+      // console.log('nav: ' + this.isAuthenticated);
       this.mainContent.isAuthenticated = this.isAuthenticated;
     });
     this.editAlbum = {
@@ -41,16 +46,19 @@ export class AddAlbumComponentComponent implements OnInit {
     };
 
     this.albumForm = new FormGroup({
-      name: new FormControl('name'),
-      artist: new FormControl('artist'),
-      year: new FormControl('year'),
-      cover: new FormControl('cover'),
-      rating: new FormControl('rating'),
+      name: new FormControl('name', Validators.required),
+      artist: new FormControl('artist', Validators.required),
+      year: new FormControl('year', [
+        Validators.required,
+        Validators.pattern(/^[12][0-9]{3}$/),
+      ]),
+      cover: new FormControl('cover', Validators.required),
+      rating: new FormControl('rating', Validators.required),
     });
     this.albumForm.reset();
 
     if (this.editAlbum.id) {
-      console.log('edit mode true');
+      // console.log('edit mode true');
       this.editMode = true;
 
       this.editAlbum = this.http
@@ -64,11 +72,20 @@ export class AddAlbumComponentComponent implements OnInit {
           if (responseData) {
             this.editAlbum = responseData;
             this.albumForm = new FormGroup({
-              name: new FormControl(this.editAlbum.name),
-              artist: new FormControl(this.editAlbum.artist),
-              year: new FormControl(this.editAlbum.year),
-              cover: new FormControl(this.editAlbum.cover),
-              rating: new FormControl(this.editAlbum.rating),
+              name: new FormControl(this.editAlbum.name, Validators.required),
+              artist: new FormControl(
+                this.editAlbum.artist,
+                Validators.required
+              ),
+              year: new FormControl(this.editAlbum.year, [
+                Validators.required,
+                Validators.pattern(/^[12][0-9]{3}$/),
+              ]),
+              cover: new FormControl(this.editAlbum.cover, Validators.required),
+              rating: new FormControl(this.editAlbum.rating, [
+                Validators.required,
+                Validators.pattern(/(?<![\d\.-])\d(\.\d)?(?!(\.\d)|\d)|(?<![\d\.-])10(?!(\.\d)|\d])/),
+              ]),
             });
           }
         });
@@ -88,12 +105,12 @@ export class AddAlbumComponentComponent implements OnInit {
           }
         )
         .subscribe(() => {
-          console.log('the album was updated!', this.albumForm.value);
-          console.log(
-            'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' +
-              this.route.snapshot.params['id'] +
-              '.json'
-          );
+          // console.log('the album was updated!', this.albumForm.value);
+          // console.log(
+          //   'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums/' +
+          //     this.route.snapshot.params['id'] +
+          //     '.json'
+          // );
         });
     } else {
       this.http
@@ -101,7 +118,7 @@ export class AddAlbumComponentComponent implements OnInit {
           params: new HttpParams().set('auth', this.token!),
         })
         .subscribe((responseData) => {
-          console.log(responseData);
+          // console.log(responseData);
           console.warn(
             'The album has been added succesfully!',
             this.albumForm.value

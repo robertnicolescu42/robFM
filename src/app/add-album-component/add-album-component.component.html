@@ -9,6 +9,7 @@
         formControlName="name"
         aria-describedby="emailHelp"
         placeholder="Enter album title"
+        required
       />
     </div>
     <div class="form-group">
@@ -20,6 +21,7 @@
         formControlName="artist"
         aria-describedby="emailHelp"
         placeholder="Enter album artist"
+        required
       />
       <small id="artistHelp" class="form-text text-muted"
         >Or artists, if that's the case</small
@@ -34,6 +36,8 @@
         formControlName="year"
         aria-describedby="yearHelp"
         placeholder="Enter the release year"
+        required
+        pattern="^[12][0-9]{3}$"
       />
     </div>
     <div class="form-group">
@@ -45,6 +49,7 @@
         formControlName="cover"
         aria-describedby="coverHelp"
         placeholder="Enter a link to the album's cover"
+        required
       />
       <div class="container">
         <div
@@ -69,8 +74,10 @@
         formControlName="rating"
         aria-describedby="ratingHelp"
         placeholder="Enter a rating for the album"
+        required
+        pattern="(?<![\d\.-])\d(\.\d)?(?!(\.\d)|\d)|(?<![\d\.-])10(?!(\.\d)|\d])"
       />/10
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" [disabled]="!albumForm.valid">Submit</button>
   </form>
 </div>

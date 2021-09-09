@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Album } from '../album.model';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,7 +15,7 @@ import { UserProfileComponent } from '../user-profile/user-profile.component';
   templateUrl: './main-content.component.html',
   styleUrls: ['./main-content.component.css'],
 })
-export class MainContentComponent implements OnInit {
+export class MainContentComponent implements OnInit, OnDestroy {
   closeModal: string | undefined;
   isAuthenticated = false;
   userSub: Subscription | undefined;
@@ -26,6 +26,7 @@ export class MainContentComponent implements OnInit {
     'https://ng-complete-guide-c4d72-default-rtdb.europe-west1.firebasedatabase.app/albums.json';
   wishlist: any;
   likedAlbums: Album[] = [];
+  isAdmin: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -70,7 +71,7 @@ export class MainContentComponent implements OnInit {
         })
       )
       .subscribe((albums) => {
-        console.log(albums);
+        // console.log(albums);
         this.albums = albums;
 
         this.inWishlist('a');
@@ -122,15 +123,23 @@ export class MainContentComponent implements OnInit {
     this.fetchAlbums();
     this.userProfile.ngOnInit();
     this.likedAlbums = this.userProfile.likedAlbums;
-    console.log('liked albums:');
-    console.log(this.likedAlbums);
+    // console.log('liked albums:');
+    // console.log(this.likedAlbums);
 
     this.userSub = this.authService.user.subscribe((user) => {
       this.isAuthenticated = !!user;
 
       if (user) {
         this.token = user.token;
+
         this.authService.getUserId(user.email);
+        this.authService.getAdminStatus(user.email);
+        // console.log(user.email);
+
+        // console.log(this.authService.getAdminStatus(user.email));
+
+        this.isAdmin = this.authService.isAdmin;
+
         this.currentUserId = this.authService.userDBid;
       } else {
         this.token = '';
@@ -180,4 +189,9 @@ export class MainContentComponent implements OnInit {
   }
 
   checkWishlistTable(userDBid: string, albumId: string) {}
+
+  ngOnDestroy() {
+    this.isAuthenticated = false;
+    this.isAdmin = false;
+  }
 }

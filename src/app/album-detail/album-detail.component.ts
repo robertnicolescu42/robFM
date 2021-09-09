@@ -40,7 +40,7 @@ export class AlbumDetailComponent implements OnInit {
     this.album = this.http
       .get(this.url + this.startAlbum.id + '.json')
       .subscribe((responseData) => {
-        console.log(responseData);
+        // console.log(responseData);
         if (responseData) {
           this.album = responseData;
 
@@ -59,7 +59,7 @@ export class AlbumDetailComponent implements OnInit {
           this.additionalAlbumData = this.http
             .get(this.lastFMurl)
             .subscribe((responseData) => {
-              console.log(responseData);
+              // console.log(responseData);
 
               this.parseData(responseData);
             });

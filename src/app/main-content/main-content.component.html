@@ -7,7 +7,7 @@
   >
     <thead class="thead-inverse">
       <tr class="h5">
-        <th>Wishlist</th>
+        <th *ngIf="isAuthenticated">Wishlist</th>
         <th style="width: 16.66%">Cover</th>
         <th>Title</th>
         <th>Artist</th>
@@ -18,7 +18,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let album of getAlbums()" class="">
-        <td>
+        <td *ngIf="isAuthenticated">
           <div *ngIf="!inWishlist(album.id)">
             <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" (click)="wishlistAlbum(album.id)">star_outline</mat-icon>
           </div>
@@ -47,7 +47,7 @@
             class="mr-1"
             style="cursor: pointer"
             [routerLink]="['/edit', album.id]"
-            *ngIf="isAuthenticated"
+            *ngIf="isAuthenticated && isAdmin"
             >edit</mat-icon
           >
           <mat-icon
@@ -55,7 +55,7 @@
             style="cursor: pointer"
             (click)="triggerModal(modalData)"
             class="mr-1"
-            *ngIf="isAuthenticated"
+            *ngIf="isAuthenticated && isAdmin"
             >delete_forever</mat-icon
           >
           <!-- (click)="onDelete(album.id)" -->

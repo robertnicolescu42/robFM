@@ -27,6 +27,7 @@ const routes: Routes = [
     component: UserProfileComponent,
     canActivate: [AuthGuard],
   },
+  { path: '**', redirectTo: '/main', pathMatch: 'full' },
 ];
 
 @NgModule({
