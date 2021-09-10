@@ -6,7 +6,6 @@ import { AuthService } from '../auth/auth.service';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlbumService } from '../shared/album.service';
 import { Album } from '../album.model';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -46,8 +45,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     private authService: AuthService,
     private http: HttpClient,
     private modalService: NgbModal,
-    private albumService: AlbumService,
-    private router: Router
+    private albumService: AlbumService
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +59,10 @@ export class UserProfileComponent implements OnInit, OnChanges {
         this.token = '';
       }
     });
+
+    
+    this.likedAlbums = this.getTransformedLikedAlbums();
+    console.log(this.likedAlbums.length);
   }
 
   checkUserType(currentUserEmail: string) {
@@ -170,7 +172,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     return this.albumService.getAlbumRating(album);
   }
 
-  getUsers() {
+  getUsers() {    
     return this.users.slice();
   }
 

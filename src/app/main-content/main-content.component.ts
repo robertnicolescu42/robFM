@@ -156,7 +156,7 @@ export class MainContentComponent implements OnInit, OnDestroy {
       console.log('main user id: ' + this.authService.userDBid);
     });
 
-    formData.append('userId', this.currentUserId);
+    formData.append('userId', this.authService.userDBid);
     formData.append('albumId', albumId);
     var object: any = {};
     formData.forEach((value, key) => (object[key] = value));

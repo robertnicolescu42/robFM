@@ -1,5 +1,5 @@
 <div class="container">
-  <p>Wishlist</p>
+  <p>{{ currentUser.username }}'s wishlist</p>
   <!-- wishlist table -->
   <table
     class="
@@ -69,7 +69,8 @@
                 type="button"
                 class="btn btn-danger"
                 (click)="
-                onDeleteAlbumFromWishlist(album.wishlistId!); modal.close('Save click');
+                  onDeleteAlbumFromWishlist(album.wishlistId!);
+                  modal.close('Save click')
                 "
               >
                 Delete
@@ -87,6 +88,10 @@
       </tr>
     </tbody>
   </table>
+  <ng-template #showMessage>
+    <h2>This user currently has no wishlisted albums !</h2> 
+  </ng-template>
+
   <!-- wishlist table -->
   <div *ngIf="isAdmin">
     <!-- admin table -->

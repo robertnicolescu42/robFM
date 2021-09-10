@@ -4,12 +4,16 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-10">
+        <br>
         <a style="cursor: pointer" class="artist" href="{{ artistLink }}" target="_blank">
           <h3>{{ album.artist }}</h3></a
         >
         <a style="cursor: pointer" class="artist" href="{{ albumLink }}" target="_blank">
           <h1>{{ album.name }}</h1></a
         >
+        <br> <br>
+        <h4>Release year: {{ album.year }} </h4>
+        <h4>Rating: {{ album.rating }}/10 </h4>
       </div>
       <div class="col-sm-2">
         <div style="background-color: white">

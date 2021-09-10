@@ -19,7 +19,7 @@
     <tbody>
       <tr *ngFor="let album of getAlbums()" class="">
         <td *ngIf="isAuthenticated">
-          <div *ngIf="!inWishlist(album.id)">
+          <div *ngIf="!inWishlist(album.id)" class="">
             <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" (click)="wishlistAlbum(album.id)">star_outline</mat-icon>
           </div>
         </td>

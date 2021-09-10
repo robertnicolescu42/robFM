@@ -1,9 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, Injectable, OnInit } from '@angular/core';
-import { FormGroup, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { MainContentComponent } from '../main-content/main-content.component';
 
 import { AuthResponseData, AuthService } from './auth.service';
 
@@ -22,7 +21,6 @@ export class AuthComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
-    private main: MainContentComponent
   ) {}
 
   onSwitchMode() {
@@ -74,7 +72,7 @@ export class AuthComponent implements OnInit {
         }
         // console.log(res);
         this.isLoading = false;
-        this.router.navigate(['/main']);
+        this.router.navigate(['/profile']);
       },
       (errorMessage) => {
         console.log(errorMessage);

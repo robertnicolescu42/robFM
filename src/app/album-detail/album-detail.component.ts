@@ -43,7 +43,7 @@ export class AlbumDetailComponent implements OnInit {
         // console.log(responseData);
         if (responseData) {
           this.album = responseData;
-
+          
           this.lastFMurl =
             'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=' +
             this.environmentVars.lastFMApiKey +
@@ -70,11 +70,11 @@ export class AlbumDetailComponent implements OnInit {
   parseData(responseData: any) {
     this.stringifiedData = JSON.stringify(responseData);
     this.parsedJSON = JSON.parse(this.stringifiedData);
-    // console.log(this.stringifiedData);
+    console.log(this.stringifiedData);
     this.listeners = this.parsedJSON.album.listeners;
     this.playCount = this.parsedJSON.album.playcount;
     this.albumLink = this.parsedJSON.album.url;
-    this.albumSummary = this.parsedJSON.album.wiki.summary;
+    this.albumSummary = this.parsedJSON.album.wiki.content.slice(0, -130);
   }
 
   // this.album = this.albums.filter(function(album) {
