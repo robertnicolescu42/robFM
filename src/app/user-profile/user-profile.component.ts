@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
@@ -12,7 +12,7 @@ import { Album } from '../album.model';
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
-export class UserProfileComponent implements OnInit, OnChanges {
+export class UserProfileComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   userSub!: Subscription;
   url: string =
@@ -62,7 +62,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
 
     
     this.likedAlbums = this.getTransformedLikedAlbums();
-    console.log(this.likedAlbums.length);
+    // console.log(this.likedAlbums.length);
   }
 
   checkUserType(currentUserEmail: string) {
@@ -164,6 +164,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
         }
       )
       .subscribe(() => {
+        this.ngOnDestroy();
         this.ngOnInit();
       });
   }
@@ -196,7 +197,8 @@ export class UserProfileComponent implements OnInit, OnChanges {
     return parsed;
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
+  ngOnDestroy() {
+    this.isAuthenticated = false;
+    this.albums = [];
   }
 }

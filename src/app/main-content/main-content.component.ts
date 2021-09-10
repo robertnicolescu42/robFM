@@ -172,23 +172,34 @@ export class MainContentComponent implements OnInit, OnDestroy {
         }
       )
       .subscribe(() => {
-        // console.log(responseData);
-        // console.warn('The album has been added to the wishlist!');
+        this.ngOnDestroy();
+        this.ngOnInit();
       });
   }
 
   inWishlist(albumId: string): boolean {
-    // console.log('in wishlist:');
-    // console.log('user db id: ' + this.authService.userDBid);
-    // console.log('album id: ' + albumId);
-    // console.log('current albums: ' + this.albums);
+    //the icon needs to change to a filled star if the respective item is present in the wishlist
+    let isPresent: boolean = false;
+    let likedAlbums = this.userProfile.getTransformedLikedAlbums();
+    for (let i = 0; i <= likedAlbums.length; i++) {
+      if (likedAlbums[i]) {
+        if (likedAlbums[i].id == albumId) {
+          isPresent = true;
+        }
+      }
+    }
 
-    // console.log('album ' + element.name + ' is in wishlist!');
-
-    return false;
+    if (isPresent == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  checkWishlistTable(userDBid: string, albumId: string) {}
+  checkWishlistTable(userDBid: string, albumId: string) {
+    // let likedAlbums = this.albumService.fetchLikedAlbums(userDBid);
+    // console.log(likedAlbums);
+  }
 
   ngOnDestroy() {
     this.isAuthenticated = false;

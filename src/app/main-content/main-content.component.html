@@ -19,9 +19,23 @@
     <tbody>
       <tr *ngFor="let album of getAlbums()" class="">
         <td *ngIf="isAuthenticated">
-          <div *ngIf="!inWishlist(album.id)" class="">
-            <mat-icon aria-hidden="false" class="mr-1" style="cursor: pointer" (click)="wishlistAlbum(album.id)">star_outline</mat-icon>
+          <div *ngIf="!inWishlist(album.id) else alreadyInWishlist" class="">
+            <mat-icon
+              aria-hidden="false"
+              class="mr-1"
+              style="cursor: pointer"
+              (click)="wishlistAlbum(album.id)"
+              >star_outline</mat-icon
+            >
           </div>
+          <ng-template #alreadyInWishlist>
+            <mat-icon
+              aria-hidden="false"
+              class="mr-1"
+              disabled
+              >star</mat-icon
+            >
+          </ng-template>
         </td>
         <td scope="row">
           <img src="{{ album.cover }}" alt="" width="50%" class="img-fluid" />

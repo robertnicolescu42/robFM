@@ -68,7 +68,7 @@ export class AddAlbumComponentComponent implements OnInit {
             '.json'
         )
         .subscribe((responseData) => {
-          console.log(responseData);
+          // console.log(responseData);
           if (responseData) {
             this.editAlbum = responseData;
             this.albumForm = new FormGroup({
